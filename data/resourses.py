@@ -19,12 +19,25 @@ class FormulasResourceList(Resource):
 class FormulasResource(Resource):
     def get(self, section, name):
         db_sess = db_session.create_session()
-        formulas = db_sess.query(Formula).filter(Formula.section.like('%{0}%'.format(section))).first()
+        formulas = db_sess.query(Formula).filter(Formula.section.like('%{0}%'.format(section)),
+                                                    Formula.name == name).first()
         if not formulas:
             abort(404, message=f'Value such as <{name}> not found.')
 
         return jsonify({'formula': {'name': formulas.name, 'definition': formulas.definition,
                                     'section': formulas.section, 'id': formulas.id}})
+
+
+class CompareResource(Resource):
+    def get(self, name):
+        db_sess = db_session.create_session()
+        formulas = db_sess.query(Formula).filter(Formula.name.like(f'%{name}%'))
+        if not formulas:
+            abort(404, message=f'Value such as <{name}> not found.')
+        return jsonify({'formulas': [{'name': item.name,
+                                      'definition': item.definition,
+                                      'section': item.section}
+                                     for item in formulas]})
 
 
 class DataWorker(Resource):
