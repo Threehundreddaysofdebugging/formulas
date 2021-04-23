@@ -1,5 +1,5 @@
-from flask_restful import Resource, abort, reqparse
 from flask import jsonify
+from flask_restful import Resource, abort, reqparse
 
 from . import db_session
 from .formulas import Formula
@@ -7,6 +7,7 @@ from .formulas import Formula
 
 class FormulasResourceList(Resource):
     def get(self, section):
+        section = section.replace('%20', " ")
         db_sess = db_session.create_session()
         formulas = db_sess.query(Formula).filter(Formula.section.like('%{0}%'.format(section)))
         if not formulas:
@@ -18,9 +19,11 @@ class FormulasResourceList(Resource):
 
 class FormulasResource(Resource):
     def get(self, section, name):
+        section = section.replace('%20', " ")
+        name = name.replace('%20', " ")
         db_sess = db_session.create_session()
         formulas = db_sess.query(Formula).filter(Formula.section.like('%{0}%'.format(section)),
-                                                    Formula.name == name).first()
+                                                 Formula.name == name).first()
         if not formulas:
             abort(404, message=f'Value such as <{name}> not found.')
 
@@ -30,6 +33,7 @@ class FormulasResource(Resource):
 
 class CompareResource(Resource):
     def get(self, name):
+        name = name.replace('%20', " ")
         db_sess = db_session.create_session()
         formulas = db_sess.query(Formula).filter(Formula.name.like(f'%{name}%'))
         if not formulas:
@@ -56,14 +60,12 @@ class DataWorker(Resource):
         db_sess.commit()
         return jsonify({'success': 'OK'})
 
-    def delete(self, id):
+    def delete(self):
         args = self.parser.parse_args()
         db_sess = db_session.create_session()
-        formula = db_sess.query(Formula).get(id)
+        formula = db_sess.query(Formula).get(args['id'])
         if not formula:
-            abort(404, mesage=f'Value with such id <{id}> not found.')
+            abort(404, mesage=f'Value with such id <{args["id"]}> not found.')
         db_sess.delete(formula)
         db_sess.commit()
         return jsonify({'success': 'OK'})
-
-

@@ -17,19 +17,17 @@ def index():
 
 @app.route('/<string:section>')
 def formulas_list(section):
-    resp = get(f'http://localhost:5000/api/{section}').json()
-    if not resp:
+    resp = get(f'http://localhost:5000/api/{section.lower()}').json()
+    if not resp or not resp.get('message') is None:
         abort(404, message=f'Value such as <{section}> not found.')
-    print(resp)
     return render_template('formulas_list.html', form_list=resp['formulas'], section=section)
 
 
 @app.route('/<string:section>/<string:name>')
 def formula(section, name):
-    resp = get(f'http://localhost:5000/api/{section}/{name}').json()
-    if not resp:
+    resp = get(f'http://localhost:5000/api/{section.lower()}/{name.lower()}').json()
+    if not resp or not resp.get('message') is None:
         abort(404, message=f'Value such as <{name}> not found.')
-    print(resp)
     return render_template('formula.html', formula=resp['formula'])
 
 

@@ -2,7 +2,7 @@
 
 {% block content %}
     {% for item in form_list %}
-        {% if loop.first %} {{section}} {% endif %}
+    {% if loop.first %} <h2>{{section}}</h2> {% endif %}
         <h4>{{item.name}}</h4>
         <a>{{item.definition}}</a>
     {% endfor %}
