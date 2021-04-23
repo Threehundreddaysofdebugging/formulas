@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
+{% for item in forms_list %}
+{% if loop.first %} <h3>{{item.name}}</h3> {% endif %}
+<a>{{item.definition}}</a>
+<h5> {{item.section}}</h5>
+{% endfor %}
+{% endblock %}
